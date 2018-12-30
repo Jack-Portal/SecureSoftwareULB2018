@@ -1,5 +1,7 @@
 public class Client {
 
-    public String file;
 
+    public static void main(String[] args){
+
+    }
 }
