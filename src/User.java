@@ -1,4 +1,5 @@
 import java.lang.Thread;
+import java.util.HashMap;
 
 /**
  * The User class
@@ -42,5 +43,63 @@ public class User extends Thread{
         this.sharedfiles = null;
     }
 
+    /**
+     * This function returns true if the user has the access rights to a directory.
+     * @return boolean
+     */
+    private boolean checkAccessRights(){
+        //TODO check access rights
+        return false;
+    }
+
+    /**
+     * This function is used to add a file to the server
+     * @param file The file in byte array form
+     */
+    private void addFile(byte[] file){
+        //TODO check access rights
+        //TODO add the file to the NAS
+    }
+
+    /**
+     * This function is used to download a file from the server and give it to the client.
+     * @param fileName      The name of the file that needs to be downloaded.
+     * @param fileLocation  The location of the file that needs to be downloaded.
+     * @return The file as a byte array.
+     */
+    private byte[] downloadFile(String fileName, String fileLocation){
+        byte[] file = {};
+        //TODO check access rights
+        //TODO download the file from the NAS
+        return file;
+    }
+
+    /**
+     * This function calls the download file function and provides a default file location in case it is needed
+     * @param fileName The name of the file that has to be downloaded by the user.
+     */
+    private byte[] downloadFile(String fileName){
+        //TODO check if this is needed.
+        return downloadFile(fileName, "./");
+    }
+
+    /**
+     * This function deletes a file at the user's request stored on the server.
+     * @param fileName The file that needs to be deleted.
+     */
+    private void deleteFile(String fileName){
+        //TODO check access rights
+        //TODO delete the file in question
+    }
+
+    /**
+     * This function gets a list of all the first layer files the user has and returns it for the client to return them.
+     * @return the list of files the user has and their file type.
+     */
+    private HashMap<String, String> ls(){
+        //TODO check access rights
+        //TODO print a list of all the files and dictionaries
+        return null;
+    }
 
 }
