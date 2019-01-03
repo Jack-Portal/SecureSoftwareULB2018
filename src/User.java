@@ -1,5 +1,6 @@
 import java.lang.Thread;
 import java.util.HashMap;
+import java.util.Scanner;
 
 /**
  * The User class
@@ -8,7 +9,7 @@ public class User extends Thread{
     //TODO never send the user name, the server has to verify the user!
 
     // Information (without an 's' because it is already plural) about the user.
-    private String userName;
+    public String userName;
     private String password;
     private String oneTimePassword;
 
@@ -23,14 +24,25 @@ public class User extends Thread{
     /**
      * This is the initialisation function for a user.
      * It can be used by both the server and the client for authentication of users and file management.
-     *
-     * @param userName The user name of the User
-     * @param password The password of the User
      */
-    public User(String userName, String password){
+    public User(){
         //TODO add an initialisation function
+        // prompt for their age
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Username: " );
+        String userName = scanner.next();
+
+        System.out.print("User Password: " );
+        String password = scanner.next();
+
+        System.out.print("OTP: ");
+        String otp = scanner.next();
+
         this.userName = userName;
         this.password = password;
+        //TODO deal with OPT
+
 
         //TODO login
         //TODO get one time password

@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.Scanner;
 
 /**
  * The Server class, is used to launch a server where registered users can upload, download and delete files securely.
@@ -65,6 +66,34 @@ public class Server {
 
     private void deleteFile(String fileName){
         //TODO SECURELY delete the file (replace all the bytes by 0 then delete it, or command to securely delete!
+    }
+
+    /**
+     * Prints a given string in the correct format for the server command line.
+     * @param toPrint whatever needs to be printed
+     */
+    public static void serverPrint(String toPrint){for (String l : toPrint.split("\n")) System.out.println("....... " + l);}
+
+
+    public static void handleCommands(){
+        Scanner scanner = new Scanner(System.in);
+        String[] command = {};
+        while(command.length <2) {
+            System.out.print("server$ ");
+            command = scanner.nextLine().split(" ");
+        }
+        switch (command[0]) {
+            //commands for private files:
+            // TODO all the p commands
+            // commands for shared files:
+            //TODO all the s commands
+
+            // other cases:
+            case "help":
+                serverPrint("Help");
+            default:
+                serverPrint("Wrong use of the commands.");
+        }
     }
 
     /**
