@@ -64,8 +64,42 @@ public class Server {
         //TODO save the file
     }
 
+    /**
+     * This function deletes a file
+     * @param fileName name of the file to be deleted.
+     */
     private void deleteFile(String fileName){
         //TODO SECURELY delete the file (replace all the bytes by 0 then delete it, or command to securely delete!
+    }
+
+    /**
+     * this function displays the pending requests and lets the admin accept them.
+     */
+    private void accept(){
+        //TODO check admin
+        //TODO load the file with all the pending requests
+        //TODO print them
+        //TODO accept the ones scanned
+    }
+
+    /**
+     * This function displays the pending requests and lets the admin refuse them.
+     */
+    private void refuse(){
+        //TODO check admin
+        //TODO load the file with all the pending requests
+        //TODO print them
+        //TODO refuse the ones scanned
+    }
+
+    /**
+     * This function displays all the users and lets the admin delete them.
+     */
+    private void deleteuser(){
+        //TODO check admin
+        //TODO load the file with all existing users
+        //TODO print them
+        //TODO delete the ones scanned
     }
 
     /**
@@ -75,6 +109,9 @@ public class Server {
     public static void serverPrint(String toPrint){for (String l : toPrint.split("\n")) System.out.println("....... " + l);}
 
 
+    /**
+     * This function handles the user input or the command line interface.
+     */
     public static void handleCommands(){
         Scanner scanner = new Scanner(System.in);
         String[] command = {};
@@ -83,10 +120,18 @@ public class Server {
             command = scanner.nextLine().split(" ");
         }
         switch (command[0]) {
-            //commands for private files:
-            // TODO all the p commands
-            // commands for shared files:
-            //TODO all the s commands
+            // new accounts
+            case "accept":
+                //TODO print all the queued requests
+                //TODO scanner and accept all the ones entered
+            case "refuse":
+                //TODO print all the queued requests
+                //TODO scanner and refuse all the ones entered
+
+            case "delete":
+                //TODO print all the accounts existing
+                //TODO scan for all the accounts that have to be deleted
+                //TODO delete everything from these accounts.
 
             // other cases:
             case "help":
@@ -102,5 +147,18 @@ public class Server {
      */
     public static void main(String[] args){
 
+        //TODO try to launch config file
+
+        //TODO if it fails
+        //TODO ask for server details
+        //TODO ask for admin details
+        //TODO launch the server
+
+        //TODO ask for admin login
+
+        //TODO launch threads that can handle user connections / interaction
+
+        //TODO while:
+        //TODO launch admin interface where an admin (log in required) can accept / refuse new user and delete users.
     }
 }
