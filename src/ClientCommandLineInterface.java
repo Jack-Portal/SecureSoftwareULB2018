@@ -9,36 +9,36 @@ import java.util.Scanner;
  * The client class, command line interface allowing users to log in, download, upload and delete files stored
  * on a server.
  */
-public class Client {
+public class ClientCommandLineInterface {
 
     public static String ServerAddress;
 
-    private User user;
+    private ClientConnectionHandler clientConnectionHandler;
 
     /**
      * Initialises the clients
      */
-    public Client(String serverAddress){
+    public ClientCommandLineInterface(String serverAddress){
         this.ServerAddress = serverAddress;
-        this.user = null;
+        this.clientConnectionHandler = null;
     }
 
 
     /**
      * Logs a user inside the server
      */
-    private static void login(Client client){
+    private static void login(ClientCommandLineInterface client){
         //TODO login
-        client.user = new User(client.ServerAddress);
+        client.clientConnectionHandler = new ClientConnectionHandler(client.ServerAddress);
     }
 
     /**
      * Logs a user out of the server
      */
-    public static String logout(User user){
-        String userName = user.userName;
+    public static String logout(ClientConnectionHandler clientConnectionHandler){
+        String userName = clientConnectionHandler.userName;
         //TODO send notification to the server that the user logged out.
-        user = null;
+        clientConnectionHandler = null;
         return userName;
     }
 
@@ -109,13 +109,13 @@ public class Client {
     }
 
 
-    public static void handleCommands(User user){
+    public static void handleCommands(ClientConnectionHandler ClientConnectionHandler){
         try {
             while (true) {
                 Scanner scanner = new Scanner(System.in);
                 String[] command = {};
                 while (command.length < 1) {
-                    System.out.print(user.userName + "$ ");
+                    System.out.print(ClientConnectionHandler.userName + "$ ");
                     command = scanner.nextLine().split(" ");
                 }
                 try {
@@ -123,14 +123,14 @@ public class Client {
                         //commands for private files:
                         case "lsp":
                             // deal with ls
-                            String lspResult = user.listPrivateDirectory();
-                            clientPrint(lspResult, user.userName);
+                            String lspResult = ClientConnectionHandler.listPrivateDirectory();
+                            clientPrint(lspResult, ClientConnectionHandler.userName);
                             break;
                         case "adp": // $ adp <fileToUpload>
                             // Add files
                             try {
                                 byte[] byteFile = loadFile(command[1]);
-                                user.addFile(byteFile);
+                                ClientConnectionHandler.addFile(byteFile);
                             } catch (Exception e) {
                                 //TODO handle the exception
                             }
@@ -138,7 +138,7 @@ public class Client {
                         case "dwp": // $ dwp <fileToDownload>
                             // Download files
                             try {
-                                byte[] fakeFile = user.downloadFile(command[1]);
+                                byte[] fakeFile = ClientConnectionHandler.downloadFile(command[1]);
                                 saveFile(fakeFile, command[1]);
                             } catch (Exception e) {
                                 //TODO handle the exception
@@ -146,32 +146,32 @@ public class Client {
                             break;
                         case "rmp": // $ rmp <fileToRemove>
                             // Delete files securely
-                            user.deleteFile(command[1]);
+                            ClientConnectionHandler.deleteFile(command[1]);
                             break;
 
                         // commands for shared files:
                         case "lss":
                             // list shared directories
-                            String lssResult = user.listSharedDirectories();
-                            clientPrint(lssResult, user.userName);
+                            String lssResult = ClientConnectionHandler.listSharedDirectories();
+                            clientPrint(lssResult, ClientConnectionHandler.userName);
                             break;
                         case "ads": // $ ads <fileToUpload> <otherFileOwners>
                             // cooperation
-                            user.checkAccessRights(command[2]);
+                            ClientConnectionHandler.checkAccessRights(command[2]);
                             // Add file
                             try {
                                 byte[] sharedByteFile = loadFile(command[1]);
-                                user.addFile(sharedByteFile);
+                                ClientConnectionHandler.addFile(sharedByteFile);
                             } catch (Exception e) {
                                 //TODO handle the exception
                             }
                             break;
                         case "dws": // $ dws <fileToDownload>
                             // cooperation
-                            user.checkAccessRights(command[1]);
+                            ClientConnectionHandler.checkAccessRights(command[1]);
                             // Download file
                             try {
-                                byte[] fakeFile = user.downloadFile(command[1]);
+                                byte[] fakeFile = ClientConnectionHandler.downloadFile(command[1]);
                                 saveFile(fakeFile, command[1]);
                             } catch (Exception e) {
                                 //TODO handle the exception
@@ -179,32 +179,33 @@ public class Client {
                             break;
                         case "rms": // $ rms <fileToRemove>
                             // cooperation
-                            user.checkAccessRights(command[1]);
+                            ClientConnectionHandler.checkAccessRights(command[1]);
                             // Delete File
-                            user.deleteFile("aFile.txt");
+                            ClientConnectionHandler.deleteFile("aFile.txt");
                             break;
 
                         // other cases:
                         case "help":
-                            clientPrint("Help", user.userName);
+                            clientPrint("Help", ClientConnectionHandler.userName);
+                            break;
                         case "logout":
                             throw new LogOutException();
                         default:
-                            clientPrint("Wrong use of the commands.", user.userName);
+                            clientPrint("Wrong use of the commands.", ClientConnectionHandler.userName);
                     }
                 } catch (IndexOutOfBoundsException i ){
-                    clientPrint("Wrong use of the commands.", user.userName);
+                    clientPrint("Wrong use of the commands.", ClientConnectionHandler.userName);
                     continue;
                 }
             }
         }
         catch (LogOutException l){
-            String userName = logout(user);
+            String userName = logout(ClientConnectionHandler);
             clientPrint(userName + " is logging out...", userName);
             clientPrint("DONE!", userName);
         }
         catch ( Exception e ){
-            String userName = logout(user);
+            String userName = logout(ClientConnectionHandler);
             clientPrint("Error occurred, user " + userName + " logged out.", userName);
         }
     }
@@ -227,7 +228,7 @@ public class Client {
                 //TODO add address verification function and probably a while loop
 
                 // try create user
-                Client client = new Client(serverAddress);
+                ClientCommandLineInterface client = new ClientCommandLineInterface(serverAddress);
 
                 try {
                     //TODO make sure none of the action done in this try statement can be half done if exception.
@@ -238,12 +239,12 @@ public class Client {
                 }
 
                 // If the application crashes, or the User interrupts the process, the program will first log the user out.
-                Runtime.getRuntime().addShutdownHook(new userInterruptHook(client.user));
+                Runtime.getRuntime().addShutdownHook(new userInterruptHook(client.clientConnectionHandler));
 
                 // This function handles different commands:
-                handleCommands(client.user);
+                handleCommands(client.clientConnectionHandler);
 
-                String username = logout(client.user);
+                String username = logout(client.clientConnectionHandler);
                 clientPrint("Session terminated", username);
 
 

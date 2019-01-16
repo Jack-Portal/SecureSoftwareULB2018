@@ -1,11 +1,9 @@
-import java.lang.Thread;
-import java.util.HashMap;
 import java.util.Scanner;
 
 /**
  * The User class
  */
-public class User extends Thread{
+public class ClientConnectionHandler extends Thread{
     //TODO never send the user name, the server has to verify the user!
 
     // Information (without an 's' because it is already plural) about the user.
@@ -26,7 +24,7 @@ public class User extends Thread{
      * This is the initialisation function for a user.
      * It can be used by both the server and the client for authentication of users and file management.
      */
-    public User(String serverAdress){
+    public ClientConnectionHandler(String serverAdress){
         this.serverAddress = serverAdress;
 
         //TODO add an initialisation function

@@ -2,15 +2,15 @@
 
 public class userInterruptHook extends Thread{
 
-    private User user;
+    private ClientConnectionHandler user;
 
-    public userInterruptHook(User user){
+    public userInterruptHook(ClientConnectionHandler user){
         this.user = user;
     }
 
     @Override
     public void run(){
-        Client.logout(this.user);
-        Client.clientPrint("\n EXIT STATUS: The User has been logged out.", "");
+        ClientCommandLineInterface.logout(this.user);
+        ClientCommandLineInterface.clientPrint("\n EXIT STATUS: The User has been logged out.", "");
     }
 }
