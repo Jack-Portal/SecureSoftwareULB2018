@@ -1,6 +1,10 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -82,50 +86,93 @@ public class ServerCommandLineInterface {
      */
     private static void accept(){
         //TODO check admin
-        //TODO load the file with all the pending requests
-        //TODO print them
-        //TODO accept the ones scanned
+        //TODO check user input and
         String state = "";
         try {
-            state = "Reading Request file.";
-            FileReader requestFile = new FileReader("./Request.txt");
-            BufferedReader bufferedReader = new BufferedReader(requestFile);
+            state = "Opening Users file to print pending Users.";
+            //opens the file
+            FileReader UsersFile = new FileReader("./Requests.txt");
+            BufferedReader bufferedReader = new BufferedReader(UsersFile);
 
-            List<String> rFile = new ArrayList<>();
+            List<String> userFile = new ArrayList<>();
 
             String line = "";
+            ServerCommandLineInterface.serverPrint("All the pending requests:\n");
             while ((line = bufferedReader.readLine()) != null) {
-                serverPrint(line);
-                rFile.add(line);
+                ServerCommandLineInterface.serverPrint(line);
+                userFile.add(line);
             }
-
-            requestFile.close();
+            UsersFile.close();
             bufferedReader.close();
 
-            state = "Asking the Admin for user names to accept.";
-            serverPrint("\n" + "Please enter the UserName of the User you wish to accept: (separated by spaces)");
+            state = "Asking the Admin for user names from Users to delete.";
+            //asks the Admin for which Users to reject
+            ServerCommandLineInterface.serverPrint("\n" + "Please enter the UserName of the User you wish to delete: (separated by spaces)");
 
+            System.out.print("Server$ ");
             Scanner scanner = new Scanner(System.in);
-            String[] usersToAccept = scanner.next().split(" ");
+            String userToAccept = scanner.nextLine();
+            scanner.close();
+            String[] usersToAccept = {};
+            if (userToAccept.contains(" ")) {
+                usersToAccept = userToAccept.split(" ");
+            } else {
+                usersToAccept = new String[]{userToAccept};
+            }
 
-            state = "Adding new users to the User file.";
-            FileWriter fileWriter = new FileWriter("./Users");
-            for (String user : usersToAccept) {
-                for (String userDetail : rFile) {
-                    if (userDetail.contains(user)) {
-                        fileWriter.append(userDetail);
+            List<String> usersThatHaveNotBeenAccepted = new ArrayList<>();
+
+            state = "Updating the users in local memory.";
+            for (String userDetail : userFile) {
+                boolean toAccept = false;
+                for (String userName : usersToAccept) {
+                    if (userDetail.startsWith(userName)) {
+                        System.out.println(userDetail);
+                        BufferedWriter writer =
+                                Files.newBufferedWriter(Paths.get("./Users.txt"),
+                                        StandardOpenOption.APPEND);
+                        writer.append(userDetail);
+                        writer.newLine();
+                        writer.close();
+                        toAccept = true;
                     }
+                }
+                if (!toAccept) {
+                    usersThatHaveNotBeenAccepted.add(userDetail);
                 }
             }
 
-            serverPrint("Added the users specified to the User file!");
+            state = "Checking new for new Users.";
+            // check that there are no new Users
+            UsersFile = new FileReader("./Requests.txt");
+            bufferedReader = new BufferedReader(UsersFile);
 
-            scanner.close();
+            line = "";
+            while ((line = bufferedReader.readLine()) != null) {
+                if (!(userFile.contains(line))) {
+                    usersThatHaveNotBeenAccepted.add(line);
+                }
+            }
+            UsersFile.close();
+            bufferedReader.close();
+
+
+            state = "ReWriting the updated Users file.";
+            // removes the "lines" from the userFile variable
+            FileWriter fileWriter = new FileWriter("./Requests.txt");
+            //writes the new Users list into the Users file
+            fileWriter.write("");
+            for (String User : usersThatHaveNotBeenAccepted) {
+                System.out.println(User);
+                fileWriter.append(User + "\n");
+            }
+
+            ServerCommandLineInterface.serverPrint("Accepted the users specified to the User file!");
+
             fileWriter.close();
             state = "DONE!";
-        }
-        catch (Exception e){
-            serverPrint("ERROR while "+state);
+        } catch (Exception e) {
+            ServerCommandLineInterface.serverPrint("ERROR while " + state);
         }
     }
 
@@ -139,76 +186,85 @@ public class ServerCommandLineInterface {
         //TODO refuse the ones scanned
         String state = "";
         try {
-            state = "Opening request file to print pending requests.";
+            state = "Opening Users file to print pending Users.";
             //opens the file
-            FileReader requestFile = new FileReader("./Request.txt");
-            BufferedReader bufferedReader = new BufferedReader(requestFile);
+            FileReader UsersFile = new FileReader("./Requests.txt");
+            BufferedReader bufferedReader = new BufferedReader(UsersFile);
 
-            List<String> rFile = new ArrayList<>();
+            List<String> userFile = new ArrayList<>();
 
             String line = "";
+            ServerCommandLineInterface.serverPrint("All the pending requests:\n");
             while ((line = bufferedReader.readLine()) != null) {
-                serverPrint(line);
-                rFile.add(line);
+                ServerCommandLineInterface.serverPrint(line);
+                userFile.add(line);
             }
-            requestFile.close();
+            UsersFile.close();
             bufferedReader.close();
 
-            state = "Asking the Admin for user names from requests to reject.";
-            //asks the Admin for which requests to reject
-            serverPrint("\n" + "Please enter the UserName of the User you wish to refuse: (separated by spaces)");
+            state = "Asking the Admin for user names from Users to delete.";
+            //asks the Admin for which Users to reject
+            ServerCommandLineInterface.serverPrint("\n" + "Please enter the UserName of the User you wish to delete: (separated by spaces)");
 
+            System.out.print("Server$ ");
             Scanner scanner = new Scanner(System.in);
-            String[] usersToAccept = scanner.next().split(" ");
+            String userToDelete = scanner.nextLine();
             scanner.close();
+            String[] usersToDelete = {};
+            if (userToDelete.contains(" ")) {
+                usersToDelete = userToDelete.split(" ");
+            } else {
+                usersToDelete = new String[]{userToDelete};
+            }
 
-            for (String user : usersToAccept) {
-                for (String userDetail : rFile) {
-                    if (userDetail.contains(user)) {
-                        rFile.remove(userDetail);
+            List<String> usersThatHaveNotBeenDeleted = new ArrayList<>();
+
+            state = "Updating the users in local memory.";
+            for (String userDetail : userFile) {
+                boolean toAccept = false;
+                for (String userName : usersToDelete) {
+                    if (userDetail.startsWith(userName)) {
+                        System.out.println(userName);
+                        toAccept = true;
                     }
+                }
+                if (!toAccept) {
+                    System.out.println(userDetail);
+                    usersThatHaveNotBeenDeleted.add(userDetail);
                 }
             }
 
-            state = "Checking new for new requests.";
-            // check that there are no new request
-            requestFile = new FileReader("./Request.txt");
-            bufferedReader = new BufferedReader(requestFile);
+            state = "Checking new for new Users.";
+            // check that there are no new Users
+            UsersFile = new FileReader("./Requests.txt");
+            bufferedReader = new BufferedReader(UsersFile);
 
             line = "";
             while ((line = bufferedReader.readLine()) != null) {
-                if ((!rFile.contains(line))) {
-                    boolean toDelete = false;
-                    for (String u : usersToAccept) {
-                        if (!line.contains(u)) {
-                            toDelete = true;
-                        }
-                    }
-                    if (!toDelete) {
-                        rFile.add(line);
-                    }
+                if (!(userFile.contains(line))) {
+                    usersThatHaveNotBeenDeleted.add(line);
                 }
             }
-            requestFile.close();
+            UsersFile.close();
             bufferedReader.close();
 
 
-            state = "ReWriting the updated request file.";
-            // removes the "lines" from the rFile variable
-            FileWriter fileWriter = new FileWriter("./Requests");
-            //writes the new request list into the request file
+            state = "ReWriting the updated Users file.";
+            // removes the "lines" from the userFile variable
+            FileWriter fileWriter = new FileWriter("./Requests.txt");
+            //writes the new Users list into the Users file
             fileWriter.write("");
-            for (String request : rFile) {
-                fileWriter.append(request);
+            for (String User : usersThatHaveNotBeenDeleted) {
+                System.out.println(User);
+                fileWriter.append(User + "\n");
             }
 
-            serverPrint("Added the users specified to the User file!");
+            ServerCommandLineInterface.serverPrint("Refused the users specified to the User file!");
 
             fileWriter.close();
             state = "DONE!";
-        }
-        catch (Exception e){
-            serverPrint("ERROR while "+ state);
+        } catch (Exception e) {
+            ServerCommandLineInterface.serverPrint("ERROR while " + state);
         }
     }
 
@@ -220,6 +276,7 @@ public class ServerCommandLineInterface {
         //TODO load the file with all existing users
         //TODO print them
         //TODO delete the ones scanned
+        //TODO delete the files associated with the account.
         String state = "";
         try {
             state = "Opening Users file to print pending Users.";
@@ -227,12 +284,13 @@ public class ServerCommandLineInterface {
             FileReader UsersFile = new FileReader("./Users.txt");
             BufferedReader bufferedReader = new BufferedReader(UsersFile);
 
-            List<String> rFile = new ArrayList<>();
+            List<String> userFile = new ArrayList<>();
 
             String line = "";
+            ServerCommandLineInterface.serverPrint("All the current users:\n");
             while ((line = bufferedReader.readLine()) != null) {
                 ServerCommandLineInterface.serverPrint(line);
-                rFile.add(line);
+                userFile.add(line);
             }
             UsersFile.close();
             bufferedReader.close();
@@ -241,15 +299,30 @@ public class ServerCommandLineInterface {
             //asks the Admin for which Users to reject
             ServerCommandLineInterface.serverPrint("\n" + "Please enter the UserName of the User you wish to delete: (separated by spaces)");
 
+            System.out.print("Server$ ");
             Scanner scanner = new Scanner(System.in);
-            String[] usersToAccept = scanner.next().split(" ");
+            String userToAccept = scanner.nextLine();
             scanner.close();
+            String[] usersToDelete = {};
+            if (userToAccept.contains(" ")){
+                usersToDelete = userToAccept.split(" ");
+            }
+            else {
+                usersToDelete = new String[]{userToAccept};
+            }
 
-            for (String user : usersToAccept) {
-                for (String userDetail : rFile) {
-                    if (userDetail.contains(user)) {
-                        rFile.remove(userDetail);
+            List<String> usersThatHaveNotBeenDeleted = new ArrayList<>();
+
+            state = "Updating the users in local memory.";
+            for (String userDetail : userFile){
+                boolean toDelete = false;
+                for(String userName : usersToDelete) {
+                    if (userDetail.startsWith(userName)){
+                        toDelete = true;
                     }
+                }
+                if (!toDelete){
+                    usersThatHaveNotBeenDeleted.add(userDetail);
                 }
             }
 
@@ -260,16 +333,8 @@ public class ServerCommandLineInterface {
 
             line = "";
             while ((line = bufferedReader.readLine()) != null) {
-                if ((!rFile.contains(line))) {
-                    boolean toDelete = false;
-                    for (String u : usersToAccept) {
-                        if (!line.contains(u)) {
-                            toDelete = true;
-                        }
-                    }
-                    if (!toDelete) {
-                        rFile.add(line);
-                    }
+                if (!(userFile.contains(line))) {
+                    usersThatHaveNotBeenDeleted.add(line);
                 }
             }
             UsersFile.close();
@@ -277,15 +342,16 @@ public class ServerCommandLineInterface {
 
 
             state = "ReWriting the updated Users file.";
-            // removes the "lines" from the rFile variable
-            FileWriter fileWriter = new FileWriter("./Users");
+            // removes the "lines" from the userFile variable
+            FileWriter fileWriter = new FileWriter("./Users.txt");
             //writes the new Users list into the Users file
             fileWriter.write("");
-            for (String Users : rFile) {
-                fileWriter.append(Users);
+            for (String User : usersThatHaveNotBeenDeleted) {
+                System.out.println(User);
+                fileWriter.append(User + "\n");
             }
 
-            ServerCommandLineInterface.serverPrint("Added the users specified to the User file!");
+            ServerCommandLineInterface.serverPrint("Removed the users specified to the User file!");
 
             fileWriter.close();
             state = "DONE!";
@@ -299,7 +365,7 @@ public class ServerCommandLineInterface {
      * Prints a given string in the correct format for the server command line.
      * @param toPrint whatever needs to be printed
      */
-    public static void serverPrint(String toPrint){for (String l : toPrint.split("\n")) System.out.println("....... " + l);}
+    static void serverPrint(String toPrint){for (String l : toPrint.split("\n")) System.out.println("....... " + l);}
 
 
     /**
