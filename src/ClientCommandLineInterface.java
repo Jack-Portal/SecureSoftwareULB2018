@@ -130,7 +130,7 @@ public class ClientCommandLineInterface {
                             // Add files
                             try {
                                 byte[] byteFile = loadFile(command[1]);
-                                ClientConnectionHandler.addFile(byteFile);
+                                ClientConnectionHandler.addFile(byteFile,"0");
                             } catch (Exception e) {
                                 //TODO handle the exception
                             }
