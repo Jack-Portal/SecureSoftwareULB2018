@@ -1,8 +1,11 @@
+import java.io.File;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.nio.file.Files;
 import java.util.Scanner;
 
 import AES.AES;
@@ -27,6 +30,7 @@ public class ClientConnectionHandler {
     private String oneTimePassword;
     private String serverAddress;
 
+    PubKey PublicServerKey;
     // Different Directories the User has access to.
     private String personalDirectory;
     private String[] sharedDirectories;
@@ -67,15 +71,16 @@ public class ClientConnectionHandler {
             
             // Generating new pair of keys
             // need to Store keys in a file on the client
-            RSA akg = new RSA(1024);
+            RSA akg = new RSA(128);
             PubKey publicKey = akg.getPublicKey();
             PrivKey privateKey = akg.getPrivateKey();
             storeRSAKeys(publicKey,privateKey);
             
-            publicKeyServer = loadServerRSAKey();
-            authentifyServer("test_authentify",publicKeyServer);
-            register(userName,password,publicKey);
-
+            if (authentifyServer()) {
+            	String publickey = publicKey.e.toString() + "@" + publicKey.n.toString();
+            	register(userName,password,publickey);
+        	}
+            
         }else if (newUser.equals("n")){
             System.out.print("Username: " );
             String userName = scanner.next();
@@ -96,39 +101,80 @@ public class ClientConnectionHandler {
     
     
     public static void storeRSAKeys(PubKey publicKey,PrivKey privateKey){
-    	
-    }
-    
-    public static PubKey loadServerRSAKey() {
-    	
-    	return publicKeyServer
-    }
-    
-    
-    public boolean authentifyServer(String message, PubKey publicKeyServer) {
-    	
-		try {
-			DatagramSocket ss = new DatagramSocket(PORT_CLIENT);
-			
-			
-            BigInteger tt = new BigInteger(message.getBytes());
-            BigInteger enc = RSA.encrypte(publicKeyServer, tt);
-            byte[] messageCrypte = enc.toByteArray();
-			DatagramPacket dataSent = new DatagramPacket(messageCrypte,messageCrypte.length,InetAddress.getByName(this.serverAddress),PORT_SERVEUR);
-			DatagramPacket dataReceived = new DatagramPacket(new byte[1024],1024);
-			ss.send(dataSent);
-			ss.receive(dataReceived);
-		} catch (Exception e) {
+        File File1 = new File("./pubKey");
+        File File2 = new File("./privKey");
+        try {
+        	String publickey = publicKey.e.toString() + "@" + publicKey.n.toString();
+        	String privatekey = privateKey.d.toString() + "@" + privateKey.n.toString(); 
+			Files.write(File1.toPath(),publickey.getBytes());
+			Files.write(File2.toPath(),privatekey.getBytes());
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
+    }
+    
+
+       
+    public boolean authentifyServer() {
     	
+		boolean authentified = false;
+
+		try {
+			DatagramSocket ss = new DatagramSocket(PORT_CLIENT);
+			// Récupérer la clé publique du Serveur
+			String keyRequest = "0";
+			byte [] keyrequest = keyRequest.getBytes();
+			DatagramPacket dataSent = new DatagramPacket(keyrequest,keyrequest.length,InetAddress.getByName(this.serverAddress),PORT_SERVEUR);
+			DatagramPacket dataReceived = new DatagramPacket(new byte[1024],1024);
+			ss.send(dataSent);
+			ss.receive(dataReceived);
+			String dataString = new String(dataReceived.getData());
+			String[] data = dataString.split("@");
+			this.PublicServerKey = new PubKey(new BigInteger(data[0]),new BigInteger(data[1]));
+			
+			
+			// Vérifier l'authenticité du Serveur
+			String message = "test_authentication";
+            BigInteger tt = new BigInteger(message.getBytes());
+            BigInteger enc = RSA.encrypte(this.PublicServerKey, tt);
+            byte[] messageCrypte = enc.toByteArray();
+            dataSent = new DatagramPacket(messageCrypte,messageCrypte.length,InetAddress.getByName(this.serverAddress),PORT_SERVEUR);
+			dataReceived = new DatagramPacket(new byte[1024],1024);
+			ss.send(dataSent);
+			ss.receive(dataReceived);
+			dataString = new String(dataReceived.getData());
+			if (dataString.equals(message)) {
+				authentified = true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return authentified;
+
     	
+
     	
     }
     
     public void register(String userName, String password, String publicKey) {
     	
+    	try {
+			DatagramSocket ss = new DatagramSocket(PORT_CLIENT);
+            BigInteger tt = new BigInteger(password.getBytes());
+            BigInteger enc = RSA.encrypte(this.PublicServerKey, tt);
+            String keyRequest = "1" + "@" + userName + "@" + publicKey + "@" + enc.toString();
+			byte [] keyrequest = keyRequest.getBytes();
+			DatagramPacket dataSent = new DatagramPacket(keyrequest,keyrequest.length,InetAddress.getByName(this.serverAddress),PORT_SERVEUR);
+			DatagramPacket dataReceived = new DatagramPacket(new byte[1024],1024);
+			ss.send(dataSent);
+			ss.receive(dataReceived);
+			String dataString = new String(dataReceived.getData());
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
     	
     }
     
