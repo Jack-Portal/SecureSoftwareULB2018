@@ -47,7 +47,7 @@ public class ClientCommandLineInterface {
      * @param fileLocation The location of the file in question.
      * @return returns the file as a byte array.
      */
-    private static byte[] loadFile(String fileLocation) throws NoSuchFileException {
+    public static byte[] loadFile(String fileLocation) throws NoSuchFileException {
 
         //load the file
         byte[] file = {};
@@ -66,7 +66,7 @@ public class ClientCommandLineInterface {
      * saves a byte array as a file on the system.
      * @param fileName name of the file where the byte array will be saved.
      */
-    private static void saveFile(byte[] byteFile, String fileName) throws IOException {
+    public static void saveFile(byte[] byteFile, String fileName) throws IOException {
         File theFile = new File("./"+fileName);
 
         boolean exists = theFile.exists();

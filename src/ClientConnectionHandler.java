@@ -1,11 +1,26 @@
+import java.math.BigInteger;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
 import java.util.Scanner;
+
+import AES.AES;
+import RSA.PrivKey;
+import RSA.PubKey;
+import RSA.RSA;
 
 /**
  * The User class
  */
-public class ClientConnectionHandler extends Thread{
+
+
+public class ClientConnectionHandler {
     //TODO never send the user name, the server has to verify the user!
 
+	public final static int PORT_CLIENT = 5000;
+	public final static int PORT_SERVEUR = 5001;
+	
     // Information (without an 's' because it is already plural) about the user.
     public String userName;
     private String password;
@@ -47,23 +62,19 @@ public class ClientConnectionHandler extends Thread{
                 confirmation = scanner.next();
             } while (!password.equals(confirmation));
 
-            //TODO set up the OTP here
-            System.out.print("OTP: ");
-            String otp = scanner.next();
-
             this.userName = userName;
             this.password = password;
-            this.oneTimePassword = otp;
-            //TODO deal with OPT
-
-            //TODO login
-            //TODO get one time password
-
-            //TODO fetch file names and directories
-            this.personalDirectory = null;
-            this.sharedDirectories = null;
-            this.personalFiles = null;
-            this.sharedfiles = null;
+            
+            // Generating new pair of keys
+            // need to Store keys in a file on the client
+            RSA akg = new RSA(1024);
+            PubKey publicKey = akg.getPublicKey();
+            PrivKey privateKey = akg.getPrivateKey();
+            storeRSAKeys(publicKey,privateKey);
+            
+            publicKeyServer = loadServerRSAKey();
+            authentifyServer("test_authentify",publicKeyServer);
+            register(userName,password,publicKey);
 
         }else if (newUser.equals("n")){
             System.out.print("Username: " );
@@ -72,25 +83,60 @@ public class ClientConnectionHandler extends Thread{
             System.out.print("User Password: " );
             String password = scanner.next();
 
-            System.out.print("OTP: ");
-            String otp = scanner.next();
-
             this.userName = userName;
             this.password = password;
-            this.oneTimePassword = otp;
-            //TODO deal with OPT
+            
+            // generate Symmetric AES key
+            String AESKey = AES.GenerateKey();
+            login(userName,password,AESKey);
 
-            //TODO login
-            //TODO get one time password
-
-            //TODO fetch file names and directories
-            this.personalDirectory = null;
-            this.sharedDirectories = null;
-            this.personalFiles = null;
-            this.sharedfiles = null;
         }
     }
 
+    
+    
+    public static void storeRSAKeys(PubKey publicKey,PrivKey privateKey){
+    	
+    }
+    
+    public static PubKey loadServerRSAKey() {
+    	
+    	return publicKeyServer
+    }
+    
+    
+    public boolean authentifyServer(String message, PubKey publicKeyServer) {
+    	
+		try {
+			DatagramSocket ss = new DatagramSocket(PORT_CLIENT);
+			
+			
+            BigInteger tt = new BigInteger(message.getBytes());
+            BigInteger enc = RSA.encrypte(publicKeyServer, tt);
+            byte[] messageCrypte = enc.toByteArray();
+			DatagramPacket dataSent = new DatagramPacket(messageCrypte,messageCrypte.length,InetAddress.getByName(this.serverAddress),PORT_SERVEUR);
+			DatagramPacket dataReceived = new DatagramPacket(new byte[1024],1024);
+			ss.send(dataSent);
+			ss.receive(dataReceived);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+    	
+    	
+    	
+    }
+    
+    public void register(String userName, String password, String publicKey) {
+    	
+    	
+    }
+    
+    
+    public void login(String username, String password, String AESKey) {
+    	
+    }
+    
     /**
      * This function returns true if the user has the access rights to a directory.
      * @return boolean
