@@ -20,7 +20,7 @@ public class ClientConnectionHandler {
 
 	public final static int PORT_CLIENT = 5000;
 	public final static int PORT_SERVEUR = 5001;
-	
+
     // Information (without an 's' because it is already plural) about the user.
     public String userName;
     private String password;
@@ -64,14 +64,14 @@ public class ClientConnectionHandler {
 
             this.userName = userName;
             this.password = password;
-            
+
             // Generating new pair of keys
             // need to Store keys in a file on the client
             RSA akg = new RSA(1024);
             PubKey publicKey = akg.getPublicKey();
             PrivKey privateKey = akg.getPrivateKey();
             storeRSAKeys(publicKey,privateKey);
-            
+
             publicKeyServer = loadServerRSAKey();
             authentifyServer("test_authentify",publicKeyServer);
             register(userName,password,publicKey);
@@ -85,7 +85,7 @@ public class ClientConnectionHandler {
 
             this.userName = userName;
             this.password = password;
-            
+
             // generate Symmetric AES key
             String AESKey = AES.GenerateKey();
             login(userName,password,AESKey);
@@ -93,24 +93,24 @@ public class ClientConnectionHandler {
         }
     }
 
-    
-    
+
+
     public static void storeRSAKeys(PubKey publicKey,PrivKey privateKey){
-    	
+
     }
-    
+
     public static PubKey loadServerRSAKey() {
-    	
+
     	return publicKeyServer
     }
-    
-    
+
+
     public boolean authentifyServer(String message, PubKey publicKeyServer) {
-    	
+
 		try {
 			DatagramSocket ss = new DatagramSocket(PORT_CLIENT);
-			
-			
+
+
             BigInteger tt = new BigInteger(message.getBytes());
             BigInteger enc = RSA.encrypte(publicKeyServer, tt);
             byte[] messageCrypte = enc.toByteArray();
@@ -122,21 +122,21 @@ public class ClientConnectionHandler {
 			e.printStackTrace();
 		}
 
-    	
-    	
-    	
+
+
+
     }
-    
+
     public void register(String userName, String password, String publicKey) {
-    	
-    	
+
+
     }
-    
-    
+
+
     public void login(String username, String password, String AESKey) {
-    	
+
     }
-    
+
     /**
      * This function returns true if the user has the access rights to a directory.
      * @return boolean

@@ -109,7 +109,6 @@ public class ServerCommandLineInterface {
             System.out.print("Server$ ");
             Scanner scanner = new Scanner(System.in);
             String userToAccept = scanner.nextLine();
-            scanner.close();
             String[] usersToAccept = {};
             if (userToAccept.contains(" ")) {
                 usersToAccept = userToAccept.split(" ");
@@ -124,7 +123,6 @@ public class ServerCommandLineInterface {
                 boolean toAccept = false;
                 for (String userName : usersToAccept) {
                     if (userDetail.startsWith(userName + " ")) {
-                        System.out.println(userDetail);
                         BufferedWriter writer =
                                 Files.newBufferedWriter(Paths.get("./Users.txt"),
                                         StandardOpenOption.APPEND);
@@ -160,7 +158,6 @@ public class ServerCommandLineInterface {
             //writes the new Users list into the Users file
             fileWriter.write("");
             for (String User : usersThatHaveNotBeenAccepted) {
-                System.out.println(User);
                 fileWriter.append(User + "\n");
             }
 
@@ -205,7 +202,7 @@ public class ServerCommandLineInterface {
             System.out.print("Server$ ");
             Scanner scanner = new Scanner(System.in);
             String userToDelete = scanner.nextLine();
-            scanner.close();
+
             String[] usersToDelete = {};
             if (userToDelete.contains(" ")) {
                 usersToDelete = userToDelete.split(" ");
@@ -220,12 +217,10 @@ public class ServerCommandLineInterface {
                 boolean toAccept = false;
                 for (String userName : usersToDelete) {
                     if (userDetail.startsWith(userName + " ")) {
-                        System.out.println(userName);
                         toAccept = true;
                     }
                 }
                 if (!toAccept) {
-                    System.out.println(userDetail);
                     usersThatHaveNotBeenDeleted.add(userDetail);
                 }
             }
@@ -251,7 +246,6 @@ public class ServerCommandLineInterface {
             //writes the new Users list into the Users file
             fileWriter.write("");
             for (String User : usersThatHaveNotBeenDeleted) {
-                System.out.println(User);
                 fileWriter.append(User + "\n");
             }
 
@@ -296,7 +290,7 @@ public class ServerCommandLineInterface {
             System.out.print("Server$ ");
             Scanner scanner = new Scanner(System.in);
             String userToAccept = scanner.nextLine();
-            scanner.close();
+
             String[] usersToDelete = {};
             if (userToAccept.contains(" ")){
                 usersToDelete = userToAccept.split(" ");
@@ -341,7 +335,6 @@ public class ServerCommandLineInterface {
             //writes the new Users list into the Users file
             fileWriter.write("");
             for (String User : usersThatHaveNotBeenDeleted) {
-                System.out.println(User);
                 fileWriter.append(User + "\n");
             }
             ServerCommandLineInterface.serverPrint("Removed the users specified to the User file!");
@@ -388,7 +381,7 @@ public class ServerCommandLineInterface {
             System.out.print("Server$ ");
             Scanner scanner = new Scanner(System.in);
             String userToAccept = scanner.nextLine();
-            scanner.close();
+
             String[] usersToAccept = {};
             if (userToAccept.contains(" ")) {
                 usersToAccept = userToAccept.split(" ");
@@ -403,7 +396,6 @@ public class ServerCommandLineInterface {
                 boolean toAccept = false;
                 for (String userName : usersToAccept) {
                     if (userDetail.startsWith(userName + " ")) {
-                        System.out.println(userDetail);
                         BufferedWriter writer =
                                 Files.newBufferedWriter(Paths.get("./FrozenAccounts.txt"),
                                         StandardOpenOption.APPEND);
@@ -439,7 +431,6 @@ public class ServerCommandLineInterface {
             //writes the new Users list into the Users file
             fileWriter.write("");
             for (String User : usersThatHaveNotBeenAccepted) {
-                System.out.println(User);
                 fileWriter.append(User + "\n");
             }
 
@@ -484,7 +475,7 @@ public class ServerCommandLineInterface {
             System.out.print("Server$ ");
             Scanner scanner = new Scanner(System.in);
             String userToAccept = scanner.nextLine();
-            scanner.close();
+
             String[] usersToAccept = {};
             if (userToAccept.contains(" ")) {
                 usersToAccept = userToAccept.split(" ");
@@ -499,7 +490,6 @@ public class ServerCommandLineInterface {
                 boolean toAccept = false;
                 for (String userName : usersToAccept) {
                     if (userDetail.startsWith(userName + " ")) {
-                        System.out.println(userDetail);
                         BufferedWriter writer =
                                 Files.newBufferedWriter(Paths.get("./Users.txt"),
                                         StandardOpenOption.APPEND);
@@ -535,7 +525,6 @@ public class ServerCommandLineInterface {
             //writes the new Users list into the Users file
             fileWriter.write("");
             for (String User : usersThatHaveNotBeenAccepted) {
-                System.out.println(User);
                 fileWriter.append(User + "\n");
             }
 
@@ -606,15 +595,14 @@ public class ServerCommandLineInterface {
     public static void handleCommands(){
         try {
             while (true) {
-                Scanner scanner = new Scanner(System.in);
-                String[] command = {};
+                String[] command = new String[]{};
                 while (command.length < 1) {
                     System.out.print("Server$ ");
+                    Scanner scanner = new Scanner(System.in);
                     command = scanner.nextLine().split(" ");
                 }
                 try {
                     switch (command[0]) {
-                        // new accounts
                         case "accept":
                             //TODO create all the folders used for storage of these user's files
                             String[] usersToAccept = accept();
@@ -632,7 +620,7 @@ public class ServerCommandLineInterface {
                             deactivateUser();
                             break;
                         case "activate":
-                            deactivateUser();
+                            activateUser();
                             break;
                         // other cases:
                         case "help":
