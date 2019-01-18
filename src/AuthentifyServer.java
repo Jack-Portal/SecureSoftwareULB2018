@@ -4,7 +4,6 @@ import RSA.PrivKey;
 import RSA.PubKey;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -27,27 +26,19 @@ public class AuthentifyServer implements Runnable {
         this.clientAddress = clientAddress;
     }
 
+    @Override
     public void run(){
         try {
-            //TODO load the server public key from stored file
-            FileReader fileReader = new FileReader("./ServerKeys");
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
-            String publicKey = bufferedReader.readLine();
-            String privateKey = bufferedReader.readLine();
-            bufferedReader.close();
-            fileReader.close();
-
-            //TODO convert string obtained above to big int
-            PubKey pbk  = null;
-            PrivKey pvk = null;
+            // load the server public key from stored file
+            PrivKey pvk = Encryption.loadPrivateKey();
 
 
-            //TODO decrypt the cipheredMessage
+            // decrypt the cipheredMessage
             BigInteger dec = RSA.decrypte( pvk , this.cipheredMessage);
             String decrytpedMessage = new String(dec.toByteArray());
 
 
-            //TODO change the client address
+            // change the client address
             byte[] bytesToSend = decrytpedMessage.getBytes();
             DatagramPacket dataSent = new DatagramPacket(bytesToSend, bytesToSend.length,InetAddress.getByName(this.clientAddress),PORT_SERVEUR);
             this.ss.send(dataSent);

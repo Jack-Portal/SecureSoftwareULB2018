@@ -33,11 +33,13 @@ public class ServerConnectionHandler implements Runnable{
                 switch(data.charAt(0)){
                     case '0' :
                         //TODO verify server identity
-                        AuthentifyServer thread = new AuthentifyServer(new BigInteger(data.split("@")[1]), ss, "TODOREPLACE");
-                        thread.run();
+                        AuthentifyServer auth = new AuthentifyServer(new BigInteger(data.split("@")[1]), ss, "TODOREPLACE");
+                        auth.run();
                         break;
                     case '1' :
                         //TODO register the client
+                        RegisterUser reg = new RegisterUser(data, ss, "TODOREPLACE");
+                        reg.run();
                         break;
                     case '2':
                         //TODO verify client credentials

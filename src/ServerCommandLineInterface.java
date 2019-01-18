@@ -660,6 +660,8 @@ public class ServerCommandLineInterface {
 
         //TODO launch threads that can handle user connections / interaction
         //ServerConnectionHandler
+        ServerConnectionHandler server = new ServerConnectionHandler();
+        server.run();
 
         // launch admin interface where an admin (log in required) can accept / refuse new user and delete users.
         handleCommands();
