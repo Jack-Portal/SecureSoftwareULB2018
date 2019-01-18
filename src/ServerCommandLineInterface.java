@@ -25,10 +25,6 @@ public class ServerCommandLineInterface {
     public static String AdminHashedPassword;
     public static String Salt;
 
-    //User related attributes
-    private HashMap<String, String> userToOtherAuthenticationParameter;     //Might need to add more of these!
-
-
     /**
      * Initialises the server
      */
@@ -609,35 +605,20 @@ public class ServerCommandLineInterface {
                 try {
                     switch (command[0]) {
                         case "accept":
-                            if (verifyAdminCredentials()){
-                                break;
-                            }
                             String[] usersToAccept = accept();
                             createFolders(usersToAccept);
                             break;
                         case "refuse":
-                            if (verifyAdminCredentials()){
-                                break;
-                            }
                             refuse();
                             break;
                         case "delete":
-                            if (verifyAdminCredentials()){
-                                break;
-                            }
                             String[] usersToDelete = deleteUser();
                             deleteDirectories(usersToDelete);
                             break;
                         case "deactivate":
-                            if (verifyAdminCredentials()){
-                                break;
-                            }
                             deactivateUser();
                             break;
                         case "activate":
-                            if (verifyAdminCredentials()){
-                                break;
-                            }
                             activateUser();
                             break;
                             
@@ -658,8 +639,9 @@ public class ServerCommandLineInterface {
             serverPrint("\nError occurred outside the switch.");
         }
     }
-    
+
     public static boolean verifyAdminCredentials() throws NoSuchAlgorithmException {
+        System.out.println("Checking Admin credentials:");
         boolean goodUserName = false;
         boolean goodPassword = false;
         System.out.println("Please enter Admin User Name:");
@@ -674,7 +656,7 @@ public class ServerCommandLineInterface {
         if (HP.equals(AdminHashedPassword)){
             goodPassword = true;
         }
-        
+
         return goodUserName && goodPassword;
     }
 
@@ -684,101 +666,49 @@ public class ServerCommandLineInterface {
      */
     public static void main(String[] args) throws Exception {
 //https://unix.stackexchange.com/questions/455013/how-to-create-a-file-that-only-sudo-can-read
-        
-        //TODO try to launch config file
+
         String configFileReaderLocation = "./ServerConfig";
         File previousServerConfig = new File(configFileReaderLocation);
-        if (previousServerConfig.exists()){
-            FileReader configFileReader = new FileReader(configFileReaderLocation);
-            BufferedReader bufferedReader = new BufferedReader(configFileReader);
+        FileReader configFileReader = new FileReader(configFileReaderLocation);
+        BufferedReader bufferedReader = new BufferedReader(configFileReader);
 
-            // loads all the Server Information
-            ServerAddress = bufferedReader.readLine();
-            UserFileLocation = bufferedReader.readLine();
-            RequestFileLocation = bufferedReader.readLine();
-            FrozenAccountsFileLocation = bufferedReader.readLine();
-            ServerKeysFileLocation = bufferedReader.readLine();
-            AdminUserName = bufferedReader.readLine();
-            AdminHashedPassword = bufferedReader.readLine();
-            Salt = bufferedReader.readLine();
+        // loads all the Server Information
+        ServerAddress = bufferedReader.readLine();
+        UserFileLocation = bufferedReader.readLine();
+        RequestFileLocation = bufferedReader.readLine();
+        FrozenAccountsFileLocation = bufferedReader.readLine();
+        ServerKeysFileLocation = bufferedReader.readLine();
+        AdminUserName = bufferedReader.readLine();
+        AdminHashedPassword = bufferedReader.readLine();
+        Salt = bufferedReader.readLine();
 
-            // Checks that the server IP address is the same as the host IP address.
-            InetAddress inetAddress = InetAddress.getLocalHost();
-            String serverAddress = inetAddress.getHostAddress();
-            if (!serverAddress.equals(ServerAddress)){
-                throw new Exception("IP address of the host is not the same as the Server Address. Cannot launch the server.");
-            }
-
-            //TODO should encrypt the keys with the admin password. AES
-            // Checks that the server's keys are accessible.
-            configFileReader.close();
-            bufferedReader.close();
-            File serverKeys = new File(ServerKeysFileLocation);
-            if (!serverKeys.exists()){
-                throw new IOException("Server Keys not found, please add the ServerKey file back in the directory where the server is launched.");
-            }
-        }else{
-            // create a server
-            InetAddress inetAddress = InetAddress.getLocalHost();
-            ServerAddress = inetAddress.getHostAddress();
-            System.out.println("ServerIPAddress: " + ServerAddress);
-            System.out.println("Please enter Admin User Name:");
-            Scanner scanner = new Scanner(System.in);
-            AdminUserName = scanner.nextLine();
-            AdminHashedPassword = "2";
-            String ConfirmedPassword = "1";
-            while(!AdminHashedPassword.equals(ConfirmedPassword)){
-                System.out.println("Please enter Admin password:");
-                scanner = new Scanner(System.in);
-                AdminHashedPassword = Encryption.sha256(scanner.nextLine()+Salt);
-                System.out.println("Please confirm Admin password:");
-                scanner = new Scanner(System.in);
-                ConfirmedPassword = Encryption.sha256(scanner.nextLine()+Salt);
-            }
-            //TODO implement this
-            //System.out.println("Do you wish to provide custom file location for files related to user information");
-            //scanner = new Scanner(System.in);
-            //AdminUserName = scanner.nextLine();
-            //if ()
-            //else
-            UserFileLocation = "./Users";
-            RequestFileLocation = "./Requests";
-            FrozenAccountsFileLocation = "./FrozenAccounts";
-            ServerKeysFileLocation = "./ServerKeys";
-            System.out.println("Storing server information for further later use. (./ServerConfig)");
-            FileWriter fileWriter = new FileWriter(UserFileLocation);
-            //writes the new Users list into the Users file
-//            public static String ServerAddress;
-//            public static String UserFileLocation;
-//            public static String RequestFileLocation;
-//            public static String FrozenAccountsFileLocation;
-//            public static String ServerKeysFileLocation;
-//            public static String AdminUserName;
-//            public static String AdminHashedPassword;
-//            public static String Salt;
-            fileWriter.write(ServerAddress + "\n");
-            fileWriter.write(UserFileLocation + "\n");
-            fileWriter.write(RequestFileLocation + "\n");
-            fileWriter.write(RequestFileLocation + "\n");
-            fileWriter.write(FrozenAccountsFileLocation + "\n");
-            fileWriter.write(ServerKeysFileLocation + "\n");
-            fileWriter.write(AdminUserName + "\n");
-            fileWriter.write(AdminHashedPassword + "\n");
-
-            ServerCommandLineInterface.serverPrint("Deactivated the users specified from the User file!");
-
-            fileWriter.close();
-            
+        // Checks that the server IP address is the same as the host IP address.
+        InetAddress inetAddress = InetAddress.getLocalHost();
+        String serverAddress = inetAddress.getHostAddress();
+        if (!serverAddress.equals(ServerAddress)) {
+            throw new Exception("IP address of the host is not the same as the Server Address. Cannot launch the server.");
         }
+
+        //TODO should encrypt the keys with the admin password. AES
+        // Checks that the server's keys are accessible.
+        configFileReader.close();
+        bufferedReader.close();
+        File serverKeys = new File(ServerKeysFileLocation);
+        if (!serverKeys.exists()) {
+            throw new IOException("Server Keys not found, please add the ServerKey file back in the directory where the server is launched.");
+        }
+
         // ask for admin login
-        verifyAdminCredentials();
+        if (verifyAdminCredentials()){
+            System.out.println("Credentials correct");
 
-        // launch threads that can handle user connections / interaction
-        //ServerConnectionHandler
-        ServerConnectionHandler server = new ServerConnectionHandler();
-        server.run();
+            // launch admin interface where an admin (log in required) can accept / refuse new user and delete users.
+            handleCommands();
+        }
+        else {
+            System.out.println("Wrong credentials.");
+        }
 
-        // launch admin interface where an admin (log in required) can accept / refuse new user and delete users.
-        handleCommands();
+
     }
 }

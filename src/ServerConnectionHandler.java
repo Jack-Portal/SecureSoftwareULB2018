@@ -20,12 +20,15 @@ public class ServerConnectionHandler implements Runnable{
     public final static int PORT_CLIENT = 5000;
     public final static int PORT_SERVEUR = 5001;
 
-    private PubKey PublicServerKey;
+    public ServerConnectionHandler(){
+
+    }
 
     @Override
     public void run(){
         while (true){
             try {
+                System.out.println("Server Running!");
                 DatagramSocket ss = new DatagramSocket(PORT_SERVEUR);
                 DatagramPacket dataReceived = new DatagramPacket(new byte[1024],1024);
                 ss.receive(dataReceived);
