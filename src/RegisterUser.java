@@ -68,7 +68,7 @@ public class RegisterUser implements Runnable{
     public void run() {
         // load the server public key from stored file
         try {
-            PrivKey pvk = Encryption.loadPrivateKey();
+            PrivKey pvk = Encryption.loadPrivateKey(ServerCommandLineInterface.ServerKeysFileLocation);
 
             // split the request
             //This is how the request is made:

@@ -1,3 +1,6 @@
+import RSA.PrivKey;
+import RSA.PubKey;
+
 import java.io.*;
 import java.nio.file.*;
 import java.security.NoSuchAlgorithmException;
@@ -5,7 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
-
+import java.net.InetAddress;
 
 /**
  * The Server class, is used to launch a server where registered users can upload, download and delete files securely.
@@ -13,22 +16,24 @@ import java.util.Scanner;
 public class ServerCommandLineInterface {
 
     //Server related attributes
-    public static String ServerAdress;
+    public static String ServerAddress;
+    public static String UserFileLocation;
+    public static String RequestFileLocation;
+    public static String FrozenAccountsFileLocation;
+    public static String ServerKeysFileLocation;
+    public static String AdminUserName;
+    public static String AdminHashedPassword;
+    public static String Salt;
 
     //User related attributes
-    private HashMap<String, String> userToPassword;
     private HashMap<String, String> userToOtherAuthenticationParameter;     //Might need to add more of these!
 
-    //Directories related attributes
-    private HashMap<String, String> userToPersonalDirectoryLocation;
-    private HashMap<String[], String> usersToSharedDirectoryLocation;
 
     /**
      * Initialises the server
      */
     private ServerCommandLineInterface(){
         //TODO ask for server address
-        this.userToPassword = null;
     }
 
     /**
@@ -88,7 +93,7 @@ public class ServerCommandLineInterface {
         try {
             state = "Opening Users file to print pending Users.";
             //opens the file
-            FileReader UsersFile = new FileReader("./Requests.txt");
+            FileReader UsersFile = new FileReader(RequestFileLocation);
             BufferedReader bufferedReader = new BufferedReader(UsersFile);
 
             List<String> userFile = new ArrayList<>();
@@ -124,7 +129,7 @@ public class ServerCommandLineInterface {
                 for (String userName : usersToAccept) {
                     if (userDetail.startsWith(userName + " ")) {
                         BufferedWriter writer =
-                                Files.newBufferedWriter(Paths.get("./Users.txt"),
+                                Files.newBufferedWriter(Paths.get(UserFileLocation),
                                         StandardOpenOption.APPEND);
                         writer.append(userDetail);
                         writer.newLine();
@@ -139,7 +144,7 @@ public class ServerCommandLineInterface {
 
             state = "Checking new for new Users.";
             // check that there are no new Users
-            UsersFile = new FileReader("./Requests.txt");
+            UsersFile = new FileReader(RequestFileLocation);
             bufferedReader = new BufferedReader(UsersFile);
 
             line = "";
@@ -154,7 +159,7 @@ public class ServerCommandLineInterface {
 
             state = "ReWriting the updated Users file.";
             // removes the "lines" from the userFile variable
-            FileWriter fileWriter = new FileWriter("./Requests.txt");
+            FileWriter fileWriter = new FileWriter(RequestFileLocation);
             //writes the new Users list into the Users file
             fileWriter.write("");
             for (String User : usersThatHaveNotBeenAccepted) {
@@ -181,7 +186,7 @@ public class ServerCommandLineInterface {
         try {
             state = "Opening Users file to print pending Users.";
             //opens the file
-            FileReader UsersFile = new FileReader("./Requests.txt");
+            FileReader UsersFile = new FileReader(RequestFileLocation);
             BufferedReader bufferedReader = new BufferedReader(UsersFile);
 
             List<String> userFile = new ArrayList<>();
@@ -227,7 +232,7 @@ public class ServerCommandLineInterface {
 
             state = "Checking new for new Users.";
             // check that there are no new Users
-            UsersFile = new FileReader("./Requests.txt");
+            UsersFile = new FileReader(RequestFileLocation);
             bufferedReader = new BufferedReader(UsersFile);
 
             line = "";
@@ -242,7 +247,7 @@ public class ServerCommandLineInterface {
 
             state = "ReWriting the updated Users file.";
             // removes the "lines" from the userFile variable
-            FileWriter fileWriter = new FileWriter("./Requests.txt");
+            FileWriter fileWriter = new FileWriter(RequestFileLocation);
             //writes the new Users list into the Users file
             fileWriter.write("");
             for (String User : usersThatHaveNotBeenDeleted) {
@@ -269,7 +274,7 @@ public class ServerCommandLineInterface {
         try {
             state = "Opening Users file to print pending Users.";
             //opens the file
-            FileReader UsersFile = new FileReader("./Users.txt");
+            FileReader UsersFile = new FileReader(UserFileLocation);
             BufferedReader bufferedReader = new BufferedReader(UsersFile);
 
             List<String> userFile = new ArrayList<>();
@@ -316,7 +321,7 @@ public class ServerCommandLineInterface {
 
             state = "Checking new for new Users.";
             // check that there are no new Users
-            UsersFile = new FileReader("./Users.txt");
+            UsersFile = new FileReader(UserFileLocation);
             bufferedReader = new BufferedReader(UsersFile);
 
             line = "";
@@ -331,7 +336,7 @@ public class ServerCommandLineInterface {
 
             state = "ReWriting the updated Users file.";
             // removes the "lines" from the userFile variable
-            FileWriter fileWriter = new FileWriter("./Users.txt");
+            FileWriter fileWriter = new FileWriter(UserFileLocation);
             //writes the new Users list into the Users file
             fileWriter.write("");
             for (String User : usersThatHaveNotBeenDeleted) {
@@ -360,7 +365,7 @@ public class ServerCommandLineInterface {
         try {
             state = "Opening Users file to print pending Users.";
             //opens the file
-            FileReader UsersFile = new FileReader("./Users.txt");
+            FileReader UsersFile = new FileReader(UserFileLocation);
             BufferedReader bufferedReader = new BufferedReader(UsersFile);
 
             List<String> userFile = new ArrayList<>();
@@ -397,7 +402,7 @@ public class ServerCommandLineInterface {
                 for (String userName : usersToAccept) {
                     if (userDetail.startsWith(userName + " ")) {
                         BufferedWriter writer =
-                                Files.newBufferedWriter(Paths.get("./FrozenAccounts.txt"),
+                                Files.newBufferedWriter(Paths.get(FrozenAccountsFileLocation),
                                         StandardOpenOption.APPEND);
                         writer.append(userDetail);
                         writer.newLine();
@@ -412,7 +417,7 @@ public class ServerCommandLineInterface {
 
             state = "Checking new for new Users.";
             // check that there are no new Users
-            UsersFile = new FileReader("./Users.txt");
+            UsersFile = new FileReader(UserFileLocation);
             bufferedReader = new BufferedReader(UsersFile);
 
             line = "";
@@ -427,7 +432,7 @@ public class ServerCommandLineInterface {
 
             state = "ReWriting the updated Users file.";
             // removes the "lines" from the userFile variable
-            FileWriter fileWriter = new FileWriter("./Users.txt");
+            FileWriter fileWriter = new FileWriter(UserFileLocation);
             //writes the new Users list into the Users file
             fileWriter.write("");
             for (String User : usersThatHaveNotBeenAccepted) {
@@ -454,7 +459,7 @@ public class ServerCommandLineInterface {
         try {
             state = "Opening Users file to print pending Users.";
             //opens the file
-            FileReader UsersFile = new FileReader("./FrozenAccounts.txt");
+            FileReader UsersFile = new FileReader(FrozenAccountsFileLocation);
             BufferedReader bufferedReader = new BufferedReader(UsersFile);
 
             List<String> userFile = new ArrayList<>();
@@ -491,7 +496,7 @@ public class ServerCommandLineInterface {
                 for (String userName : usersToAccept) {
                     if (userDetail.startsWith(userName + " ")) {
                         BufferedWriter writer =
-                                Files.newBufferedWriter(Paths.get("./Users.txt"),
+                                Files.newBufferedWriter(Paths.get(UserFileLocation),
                                         StandardOpenOption.APPEND);
                         writer.append(userDetail);
                         writer.newLine();
@@ -506,7 +511,7 @@ public class ServerCommandLineInterface {
 
             state = "Checking new for new Users.";
             // check that there are no new Users
-            UsersFile = new FileReader("./FrozenAccounts.txt");
+            UsersFile = new FileReader(FrozenAccountsFileLocation);
             bufferedReader = new BufferedReader(UsersFile);
 
             line = "";
@@ -521,7 +526,7 @@ public class ServerCommandLineInterface {
 
             state = "ReWriting the updated Users file.";
             // removes the "lines" from the userFile variable
-            FileWriter fileWriter = new FileWriter("./FrozenAccounts.txt");
+            FileWriter fileWriter = new FileWriter(FrozenAccountsFileLocation);
             //writes the new Users list into the Users file
             fileWriter.write("");
             for (String User : usersThatHaveNotBeenAccepted) {
@@ -604,27 +609,42 @@ public class ServerCommandLineInterface {
                 try {
                     switch (command[0]) {
                         case "accept":
-                            //TODO create all the folders used for storage of these user's files
+                            if (verifyAdminCredentials()){
+                                break;
+                            }
                             String[] usersToAccept = accept();
                             createFolders(usersToAccept);
                             break;
                         case "refuse":
+                            if (verifyAdminCredentials()){
+                                break;
+                            }
                             refuse();
                             break;
                         case "delete":
-                            //TODO delete everything from these accounts.
+                            if (verifyAdminCredentials()){
+                                break;
+                            }
                             String[] usersToDelete = deleteUser();
                             deleteDirectories(usersToDelete);
                             break;
                         case "deactivate":
+                            if (verifyAdminCredentials()){
+                                break;
+                            }
                             deactivateUser();
                             break;
                         case "activate":
+                            if (verifyAdminCredentials()){
+                                break;
+                            }
                             activateUser();
                             break;
+                            
                         // other cases:
                         case "help":
                             serverPrint("Help");
+                            break;
                         default:
                             serverPrint("Wrong use of the commands.");
                     }
@@ -638,27 +658,122 @@ public class ServerCommandLineInterface {
             serverPrint("\nError occurred outside the switch.");
         }
     }
+    
+    public static boolean verifyAdminCredentials() throws NoSuchAlgorithmException {
+        boolean goodUserName = false;
+        boolean goodPassword = false;
+        System.out.println("Please enter Admin User Name:");
+        Scanner scanner = new Scanner(System.in);
+        String UN = scanner.nextLine();
+        System.out.println("Please enter Admin password:");
+        scanner = new Scanner(System.in);
+        String HP = Encryption.sha256(scanner.nextLine()+Salt);
+        if (UN.equals(AdminUserName)){
+            goodUserName = true;
+        }
+        if (HP.equals(AdminHashedPassword)){
+            goodPassword = true;
+        }
+        
+        return goodUserName && goodPassword;
+    }
 
     /**
      * The main function of the server, is used to launch the server.
      * @param args default arguments of the main function passed from the command prompt.
      */
-    public static void main(String[] args){
+    public static void main(String[] args) throws Exception {
 //https://unix.stackexchange.com/questions/455013/how-to-create-a-file-that-only-sudo-can-read
-        //TODO Check that users do not already exist when accepting a user request!
-
+        
         //TODO try to launch config file
-        if (new File("./ServerConfig").exists()){
-            //TODO load all the file information
+        String configFileReaderLocation = "./ServerConfig";
+        File previousServerConfig = new File(configFileReaderLocation);
+        if (previousServerConfig.exists()){
+            FileReader configFileReader = new FileReader(configFileReaderLocation);
+            BufferedReader bufferedReader = new BufferedReader(configFileReader);
+
+            // loads all the Server Information
+            ServerAddress = bufferedReader.readLine();
+            UserFileLocation = bufferedReader.readLine();
+            RequestFileLocation = bufferedReader.readLine();
+            FrozenAccountsFileLocation = bufferedReader.readLine();
+            ServerKeysFileLocation = bufferedReader.readLine();
+            AdminUserName = bufferedReader.readLine();
+            AdminHashedPassword = bufferedReader.readLine();
+            Salt = bufferedReader.readLine();
+
+            // Checks that the server IP address is the same as the host IP address.
+            InetAddress inetAddress = InetAddress.getLocalHost();
+            String serverAddress = inetAddress.getHostAddress();
+            if (!serverAddress.equals(ServerAddress)){
+                throw new Exception("IP address of the host is not the same as the Server Address. Cannot launch the server.");
+            }
+
+            //TODO should encrypt the keys with the admin password. AES
+            // Checks that the server's keys are accessible.
+            configFileReader.close();
+            bufferedReader.close();
+            File serverKeys = new File(ServerKeysFileLocation);
+            if (!serverKeys.exists()){
+                throw new IOException("Server Keys not found, please add the ServerKey file back in the directory where the server is launched.");
+            }
         }else{
-            //TODO create a server / files and permissions
+            // create a server
+            InetAddress inetAddress = InetAddress.getLocalHost();
+            ServerAddress = inetAddress.getHostAddress();
+            System.out.println("ServerIPAddress: " + ServerAddress);
+            System.out.println("Please enter Admin User Name:");
+            Scanner scanner = new Scanner(System.in);
+            AdminUserName = scanner.nextLine();
+            AdminHashedPassword = "2";
+            String ConfirmedPassword = "1";
+            while(!AdminHashedPassword.equals(ConfirmedPassword)){
+                System.out.println("Please enter Admin password:");
+                scanner = new Scanner(System.in);
+                AdminHashedPassword = Encryption.sha256(scanner.nextLine()+Salt);
+                System.out.println("Please confirm Admin password:");
+                scanner = new Scanner(System.in);
+                ConfirmedPassword = Encryption.sha256(scanner.nextLine()+Salt);
+            }
+            //TODO implement this
+            //System.out.println("Do you wish to provide custom file location for files related to user information");
+            //scanner = new Scanner(System.in);
+            //AdminUserName = scanner.nextLine();
+            //if ()
+            //else
+            UserFileLocation = "./Users";
+            RequestFileLocation = "./Requests";
+            FrozenAccountsFileLocation = "./FrozenAccounts";
+            ServerKeysFileLocation = "./ServerKeys";
+            System.out.println("Storing server information for further later use. (./ServerConfig)");
+            FileWriter fileWriter = new FileWriter(UserFileLocation);
+            //writes the new Users list into the Users file
+//            public static String ServerAddress;
+//            public static String UserFileLocation;
+//            public static String RequestFileLocation;
+//            public static String FrozenAccountsFileLocation;
+//            public static String ServerKeysFileLocation;
+//            public static String AdminUserName;
+//            public static String AdminHashedPassword;
+//            public static String Salt;
+            fileWriter.write(ServerAddress + "\n");
+            fileWriter.write(UserFileLocation + "\n");
+            fileWriter.write(RequestFileLocation + "\n");
+            fileWriter.write(RequestFileLocation + "\n");
+            fileWriter.write(FrozenAccountsFileLocation + "\n");
+            fileWriter.write(ServerKeysFileLocation + "\n");
+            fileWriter.write(AdminUserName + "\n");
+            fileWriter.write(AdminHashedPassword + "\n");
+
+            ServerCommandLineInterface.serverPrint("Deactivated the users specified from the User file!");
+
+            fileWriter.close();
+            
         }
-        //TODO ask for admin login
+        // ask for admin login
+        verifyAdminCredentials();
 
-        //TODO launch the server
-        //using all the config variables
-
-        //TODO launch threads that can handle user connections / interaction
+        // launch threads that can handle user connections / interaction
         //ServerConnectionHandler
         ServerConnectionHandler server = new ServerConnectionHandler();
         server.run();

@@ -26,9 +26,9 @@ public class Encryption {
         return sb.toString();
     }
 
-    public static PrivKey loadPrivateKey() throws IOException {
+    public static PrivKey loadPrivateKey(String KeyFileLocation) throws IOException {
         // load the server public key from stored file
-        FileReader fileReader = new FileReader("./ServerKeys");
+        FileReader fileReader = new FileReader(KeyFileLocation);
         BufferedReader bufferedReader = new BufferedReader(fileReader);
         String[] publicKey = bufferedReader.readLine().split("@");
         String[] privateKey = bufferedReader.readLine().split("@");

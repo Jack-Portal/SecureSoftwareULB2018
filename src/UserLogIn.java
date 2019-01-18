@@ -57,7 +57,7 @@ public class UserLogIn implements Runnable{
     @Override
     public void run(){
         try {
-            PrivKey pvk = Encryption.loadPrivateKey();
+            PrivKey pvk = Encryption.loadPrivateKey(ServerCommandLineInterface.ServerKeysFileLocation);
             // split the request
             //This is how the request is made:
             //String keyRequest = "2" + "@" + userName + "@" + enc.toString();

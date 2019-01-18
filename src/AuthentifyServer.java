@@ -30,7 +30,7 @@ public class AuthentifyServer implements Runnable {
     public void run(){
         try {
             // load the server public key from stored file
-            PrivKey pvk = Encryption.loadPrivateKey();
+            PrivKey pvk = Encryption.loadPrivateKey(ServerCommandLineInterface.ServerKeysFileLocation);
 
 
             // decrypt the cipheredMessage
