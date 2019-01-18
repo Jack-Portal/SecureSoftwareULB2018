@@ -64,7 +64,7 @@ public class LaunchServer {
     public static void main(String[] args) throws Exception {
 //https://unix.stackexchange.com/questions/455013/how-to-create-a-file-that-only-sudo-can-read
 
-        //TODO try to launch config file
+        // try to launch config file
         String configFileReaderLocation = "./ServerConfig";
         File previousServerConfig = new File(configFileReaderLocation);
         if (previousServerConfig.exists()) {

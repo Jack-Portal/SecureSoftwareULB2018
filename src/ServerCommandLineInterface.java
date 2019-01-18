@@ -1,11 +1,7 @@
-import RSA.PrivKey;
-import RSA.PubKey;
-
 import java.io.*;
 import java.nio.file.*;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 import java.net.InetAddress;
@@ -36,7 +32,6 @@ public class ServerCommandLineInterface {
      * this function displays the pending requests and lets the admin accept them.
      */
     private static String[] accept(){
-        //TODO check admin
         //TODO check user input and
         String state = "";
         try {
@@ -112,7 +107,7 @@ public class ServerCommandLineInterface {
             //writes the new Users list into the Users file
             fileWriter.write("");
             for (String User : usersThatHaveNotBeenAccepted) {
-                fileWriter.append(User + "\n");
+                fileWriter.append(User).append("\n");
             }
 
             ServerCommandLineInterface.serverPrint("Accepted the users specified to the User file!");
@@ -130,7 +125,6 @@ public class ServerCommandLineInterface {
      * This function displays the pending requests and lets the admin refuse them.
      */
     private static void refuse(){
-        //TODO check admin
         String state = "";
         try {
             state = "Opening Users file to print pending Users.";
@@ -216,9 +210,6 @@ public class ServerCommandLineInterface {
      * This function displays all the users and lets the admin delete them.
      */
     private static String[] deleteUser(){
-        //TODO check admin
-        //TODO delete the files associated with the account.
-        //TODO add space after startswith to make sure that only the right users are accepted / removed.........
         String state = "";
         try {
             state = "Opening Users file to print pending Users.";
@@ -307,9 +298,6 @@ public class ServerCommandLineInterface {
      * This function displays all the users and lets the admin deactivate them.
      */
     private static void deactivateUser(){
-        //TODO check admin
-        //TODO delete the files associated with the account.
-        //TODO add space after startswith to make sure that only the right users are accepted / removed.........
         String state = "";
         try {
             state = "Opening Users file to print pending Users.";
@@ -401,9 +389,6 @@ public class ServerCommandLineInterface {
      * This function displays all the users and lets the admin deactivate them.
      */
     private static void activateUser(){
-        //TODO check admin
-        //TODO delete the files associated with the account.
-        //TODO add space after startswith to make sure that only the right users are accepted / removed.........
         String state = "";
         try {
             state = "Opening Users file to print pending Users.";
@@ -536,6 +521,7 @@ public class ServerCommandLineInterface {
         }
     }
 
+
     /**
      * Prints a given string in the correct format for the server command line.
      * @param toPrint whatever needs to be printed
@@ -558,20 +544,40 @@ public class ServerCommandLineInterface {
                 try {
                     switch (command[0]) {
                         case "accept":
+                            if (!verifyAdminCredentials()){
+                                serverPrint("Failed to verify admin credentials.");
+                                break;
+                            }
                             String[] usersToAccept = accept();
                             createFolders(usersToAccept);
                             break;
                         case "refuse":
+                            if (!verifyAdminCredentials()){
+                                serverPrint("Failed to verify admin credentials.");
+                                break;
+                            }
                             refuse();
                             break;
                         case "delete":
+                            if (!verifyAdminCredentials()){
+                                serverPrint("Failed to verify admin credentials.");
+                                break;
+                            }
                             String[] usersToDelete = deleteUser();
                             deleteDirectories(usersToDelete);
                             break;
                         case "deactivate":
+                            if (!verifyAdminCredentials()){
+                                serverPrint("Failed to verify admin credentials.");
+                                break;
+                            }
                             deactivateUser();
                             break;
                         case "activate":
+                            if (!verifyAdminCredentials()){
+                                serverPrint("Failed to verify admin credentials.");
+                                break;
+                            }
                             activateUser();
                             break;
                             
@@ -631,9 +637,9 @@ public class ServerCommandLineInterface {
         RequestFileLocation = bufferedReader.readLine();
         FrozenAccountsFileLocation = bufferedReader.readLine();
         ServerKeysFileLocation = bufferedReader.readLine();
+        Salt = bufferedReader.readLine();
         AdminUserName = bufferedReader.readLine();
         AdminHashedPassword = bufferedReader.readLine();
-        Salt = bufferedReader.readLine();
 
         // Checks that the server IP address is the same as the host IP address.
         InetAddress inetAddress = InetAddress.getLocalHost();

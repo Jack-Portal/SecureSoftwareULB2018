@@ -15,7 +15,7 @@ import RSA.PubKey;
 import RSA.RSA;
 
 /**
- * The User class
+ * The Client class that handles connections with the server on the demand of the Client Command line interface / user.
  */
 
 

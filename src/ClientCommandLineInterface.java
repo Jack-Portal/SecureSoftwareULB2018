@@ -138,8 +138,8 @@ public class ClientCommandLineInterface {
                         case "dwp": // $ dwp <fileToDownload>
                             // Download files
                             try {
-                                byte[] fakeFile = ClientConnectionHandler.downloadFile(command[1]);
-                                saveFile(fakeFile, command[1]);
+                                ClientConnectionHandler.downloadFile(command[1]);
+                                //saveFile(fakeFile, command[1]);
                             } catch (Exception e) {
                                 //TODO handle the exception
                             }
@@ -157,29 +157,26 @@ public class ClientCommandLineInterface {
                             break;
                         case "ads": // $ ads <fileToUpload> <otherFileOwners>
                             // cooperation
-                            ClientConnectionHandler.checkAccessRights(command[2]);
                             // Add file
                             try {
                                 byte[] sharedByteFile = loadFile(command[1]);
-                                ClientConnectionHandler.addFile(sharedByteFile);
+                                ClientConnectionHandler.addFile(sharedByteFile, "");
                             } catch (Exception e) {
                                 //TODO handle the exception
                             }
                             break;
                         case "dws": // $ dws <fileToDownload>
                             // cooperation
-                            ClientConnectionHandler.checkAccessRights(command[1]);
                             // Download file
                             try {
-                                byte[] fakeFile = ClientConnectionHandler.downloadFile(command[1]);
-                                saveFile(fakeFile, command[1]);
+                                ClientConnectionHandler.downloadFile(command[1].toString());
+                                //saveFile(fakeFile, command[1]);
                             } catch (Exception e) {
                                 //TODO handle the exception
                             }
                             break;
                         case "rms": // $ rms <fileToRemove>
                             // cooperation
-                            ClientConnectionHandler.checkAccessRights(command[1]);
                             // Delete File
                             ClientConnectionHandler.deleteFile("aFile.txt");
                             break;

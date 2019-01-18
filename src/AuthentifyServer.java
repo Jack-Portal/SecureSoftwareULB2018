@@ -1,10 +1,6 @@
 import RSA.RSA;
 
 import RSA.PrivKey;
-import RSA.PubKey;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.DatagramPacket;
