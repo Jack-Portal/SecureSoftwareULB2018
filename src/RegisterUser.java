@@ -40,7 +40,7 @@ public class RegisterUser implements Runnable{
         }
 
         //checking the requests:
-        UsersFile = new FileReader("./Requests.txt");
+        UsersFile = new FileReader("./Requests");
         bufferedReader = new BufferedReader(UsersFile);
 
         while ((line = bufferedReader.readLine()) != null) {

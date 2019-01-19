@@ -544,40 +544,20 @@ public class ServerCommandLineInterface {
                 try {
                     switch (command[0]) {
                         case "accept":
-                            if (!verifyAdminCredentials()){
-                                serverPrint("Failed to verify admin credentials.");
-                                break;
-                            }
                             String[] usersToAccept = accept();
                             createFolders(usersToAccept);
                             break;
                         case "refuse":
-                            if (!verifyAdminCredentials()){
-                                serverPrint("Failed to verify admin credentials.");
-                                break;
-                            }
                             refuse();
                             break;
                         case "delete":
-                            if (!verifyAdminCredentials()){
-                                serverPrint("Failed to verify admin credentials.");
-                                break;
-                            }
                             String[] usersToDelete = deleteUser();
                             deleteDirectories(usersToDelete);
                             break;
                         case "deactivate":
-                            if (!verifyAdminCredentials()){
-                                serverPrint("Failed to verify admin credentials.");
-                                break;
-                            }
                             deactivateUser();
                             break;
                         case "activate":
-                            if (!verifyAdminCredentials()){
-                                serverPrint("Failed to verify admin credentials.");
-                                break;
-                            }
                             activateUser();
                             break;
                             

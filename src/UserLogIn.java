@@ -23,7 +23,7 @@ public class UserLogIn implements Runnable{
 
     private boolean checkUserName(String userName) throws IOException {
         //checking the requests:
-        FileReader UsersFile = new FileReader("./Requests.txt");
+        FileReader UsersFile = new FileReader("./Requests");
         BufferedReader bufferedReader = new BufferedReader(UsersFile);
         String line = "";
 
